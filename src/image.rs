@@ -8,10 +8,13 @@
 // except according to those terms.
 
 use stb_image::bindgen::*;
+use stb_image_resize::*;
+use stb_image_write::*;
 
 use libc::{c_void, c_int};
 use std::convert::AsRef;
 use std::ffi::CString;
+use std::mem::{size_of, transmute};
 use std::path::Path;
 use std::slice;
 
@@ -31,6 +34,46 @@ impl<T> Image<T> {
             data    : data,
         }
     }
+}
+
+extern "C" fn image_u8_vec_writer(context: *mut c_void, data: *mut c_void, size: c_int) {
+//extern "C" fn image_u8_vec_writer(buf: &mut Vec<u8>, data: *mut u8, size: c_int) {
+  unsafe {
+    let mut buf: &mut Vec<u8> = transmute(context);
+    buf.extend_from_slice(slice::from_raw_parts(data as *const u8, size as usize));
+  }
+}
+
+impl Image<u8> {
+  pub fn resize(&self, out: &mut Image<u8>) -> Result<(), ()> {
+    if self.depth != out.depth {
+      return Err(());
+    }
+    let res = unsafe { stbir_resize_uint8(
+        self.data.as_ptr(), self.width as i32, self.height as i32, (self.width * self.depth) as i32,
+        out.data.as_mut_ptr(), out.width as i32, out.height as i32, (out.width * out.depth) as i32,
+        self.depth as i32,
+    ) };
+    if res == 0 {
+      return Err(());
+    }
+    Ok(())
+  }
+
+  pub fn write_png(&self) -> Result<Vec<u8>, ()> {
+    let mut buf = Vec::new();
+    let res = unsafe { stbi_write_png_to_func(
+        image_u8_vec_writer as stbi_write_func,
+        &mut buf as *mut Vec<u8> as *mut c_void,
+        self.width as i32, self.height as i32, self.depth as i32,
+        self.data.as_ptr() as *const c_void,
+        (self.depth * self.width) as i32,
+    ) };
+    if res == 0 {
+      return Err(());
+    }
+    Ok(buf)
+  }
 }
 
 pub enum LoadResult {

@@ -13,5 +13,6 @@
 extern crate libc;
 
 pub mod stb_image;
+pub mod stb_image_resize;
+pub mod stb_image_write;
 pub mod image;
-

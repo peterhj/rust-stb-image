@@ -1,14 +1,6 @@
-ifneq ($(HOST),$(TARGET))
-
-CC ?= $(TARGET)-gcc
-AR ?= $(TARGET)-ar
-
-else
-
-CC ?= gcc
+#CC ?= gcc
+CC ?= cc
 AR ?= ar
-
-endif
 
 ifeq (windows,$(findstring windows,$(TARGET)))
     OSTYPE=windows
@@ -29,10 +21,22 @@ else
 endif
 
 .PHONY: all
-all: $(OUT_DIR)/libstb-image.a
+all: $(OUT_DIR)/libstb-image.a $(OUT_DIR)/libstb-image-resize.a $(OUT_DIR)/libstb-image-write.a
 
 $(OUT_DIR)/stb_image.o: src/stb_image.c
 	$(CC) $< -o $@ -c $(CFLAGS)
 
 $(OUT_DIR)/libstb-image.a: $(OUT_DIR)/stb_image.o
+	$(AR) rcs $@ $^
+
+$(OUT_DIR)/stb_image_resize.o: src/stb_image_resize.c
+	$(CC) $< -o $@ -c $(CFLAGS)
+
+$(OUT_DIR)/libstb-image-resize.a: $(OUT_DIR)/stb_image_resize.o
+	$(AR) rcs $@ $^
+
+$(OUT_DIR)/stb_image_write.o: src/stb_image_write.c
+	$(CC) $< -o $@ -c $(CFLAGS)
+
+$(OUT_DIR)/libstb-image-write.a: $(OUT_DIR)/stb_image_write.o
 	$(AR) rcs $@ $^
