@@ -715,8 +715,11 @@ static int stbi__sse2_available()
 static int stbi__sse2_available()
 {
 #if defined(__GNUC__) && (__GNUC__ * 100 + __GNUC_MINOR__) >= 408 // GCC 4.8 or later
+   // FIXME(20161018): `__builtin_cpu_supports` is broken in our version of 4.9.
+   // Just assume we are running on a recent x86!
    // GCC 4.8+ has a nice way to do this
-   return __builtin_cpu_supports("sse2");
+   //return __builtin_cpu_supports("sse2");
+   return 1;
 #else
    // portable way to do this, preferably without using GCC inline ASM?
    // just bail for now.
