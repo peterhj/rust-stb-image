@@ -5,7 +5,6 @@ use libc::*;
 //void stbi_write_func(void *context, void *data, int size)
 pub type stbi_write_func = extern "C" fn (context: *mut c_void, data: *mut c_void, size: c_int);
 
-#[link(name = "stb-image-write", kind = "static")]
 extern "C" {
   pub fn stbi_write_png_to_func(
       //tbi_write_func *func, void *context, int w, int h, int comp, const void  *data, int stride_in_bytes

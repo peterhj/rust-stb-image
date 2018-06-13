@@ -21,5 +21,7 @@ fn main() {
       .unwrap();
   assert!(result.success());
   println!("cargo:rustc-link-search=native={}", out_dir);
-  //println!("cargo:rustc-link-lib=static=stb-image");
+  println!("cargo:rustc-link-lib=static=stb-image");
+  println!("cargo:rustc-link-lib=static=stb-image-resize");
+  println!("cargo:rustc-link-lib=static=stb-image-write");
 }

@@ -3,7 +3,6 @@
 
 use libc::*;
 
-#[link(name = "stb-image-resize", kind = "static")]
 extern "C" {
   // Easy API.
   pub fn stbir_resize_uint8(
